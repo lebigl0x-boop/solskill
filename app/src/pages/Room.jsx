@@ -27,6 +27,14 @@ export default function Room() {
 
   const myId = socket.id
 
+  // Si le créateur arrive avec alreadyJoined, on re-join quand même
+  // pour enregistrer le socket actuel côté serveur
+  useEffect(() => {
+    if (navState.alreadyJoined && navState.playerName) {
+      join(navState.playerName)
+    }
+  }, [])
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {

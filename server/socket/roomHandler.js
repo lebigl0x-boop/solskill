@@ -106,7 +106,7 @@ function handleLeave(io, socket) {
         io.emit('rooms:update', getPublicRooms())
         console.log(`[room:delete] ${roomId} (empty after grace)`)
       }
-    }, 10000)
+    }, 60000)
     console.log(`[room:grace] ${roomId} — deleting in 10s if still empty`)
   } else {
     // Transfer host if needed
