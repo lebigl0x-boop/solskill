@@ -6,24 +6,13 @@ import { registerRoomHandlers } from './socket/roomHandler.js'
 import { registerGameHandlers } from './socket/gameHandler.js'
 import { getPublicRooms } from './store.js'
 
-const ALLOWED_ORIGINS = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  ...(process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim().replace(/\/$/, ''))
-    : []),
-]
-
 const app = express()
-app.use(cors({ origin: ALLOWED_ORIGINS }))
+app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
-  cors: {
-    origin: ALLOWED_ORIGINS,
-    methods: ['GET', 'POST'],
-  },
+  cors: { origin: true, methods: ['GET', 'POST'] },
 })
 
 // REST: public rooms list (for initial load)
