@@ -22,7 +22,7 @@ export default function Room() {
   const [nameInput, setNameInput] = useState('')
   const [joinError, setJoinError] = useState(null)
 
-  const { room, error, countdown, gameResult, join, leave, start } = useRoom(joined ? roomId : null)
+  const { room, error, countdown, gameResult, join, leave, start } = useRoom(roomId)
   const { target, score, liveScores, gameInfo, timeLeft, sendClick } = useGame()
 
   const myId = socket.id
