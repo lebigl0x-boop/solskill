@@ -1,35 +1,8 @@
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-
+// Wallet connect — placeholder until v0.3 (Anchor + $SHOT)
 export default function ConnectButton() {
-  const { publicKey, disconnect, connecting } = useWallet()
-  const { setVisible } = useWalletModal()
-
-  if (connecting) {
-    return (
-      <button className="btn-secondary opacity-60 cursor-not-allowed text-sm" disabled>
-        Connecting...
-      </button>
-    )
-  }
-
-  if (publicKey) {
-    const addr = publicKey.toBase58()
-    const short = `${addr.slice(0, 4)}...${addr.slice(-4)}`
-    return (
-      <button
-        onClick={disconnect}
-        className="flex items-center gap-2 bg-surface border border-purple/40 text-purple font-mono text-sm px-4 py-2 rounded-lg hover:border-purple/80 hover:bg-purple/10 transition-all duration-150"
-      >
-        <span className="w-2 h-2 rounded-full bg-purple glow-purple inline-block" />
-        {short}
-      </button>
-    )
-  }
-
   return (
     <button
-      onClick={() => setVisible(true)}
+      onClick={() => alert('Wallet connect arrives in v0.3 with $SHOT token!')}
       className="flex items-center gap-2 bg-surface border border-purple/40 text-slate-300 font-heading text-sm px-4 py-2 rounded-lg hover:border-purple/80 hover:text-purple transition-all duration-150"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
