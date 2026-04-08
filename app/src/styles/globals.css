@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #0A0A0F;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #13131A;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E1E2E;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FF2D78;
+  }
+}
+
+@layer components {
+  /* CRT scanline overlay */
+  .scanline {
+    position: relative;
+    overflow: hidden;
+  }
+  .scanline::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Neon glow utilities */
+  .glow-pink {
+    box-shadow: 0 0 12px #FF2D78, 0 0 30px #FF2D7840;
+  }
+  .glow-cyan {
+    box-shadow: 0 0 12px #00FFF0, 0 0 30px #00FFF040;
+  }
+  .glow-purple {
+    box-shadow: 0 0 12px #9945FF, 0 0 30px #9945FF40;
+  }
+  .text-glow-pink {
+    text-shadow: 0 0 8px #FF2D78, 0 0 20px #FF2D7870;
+  }
+  .text-glow-cyan {
+    text-shadow: 0 0 8px #00FFF0, 0 0 20px #00FFF070;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-pink text-white font-heading font-semibold px-6 py-2.5 rounded-lg
+           transition-all duration-150 hover:brightness-110 active:scale-95
+           glow-pink border border-pink/20;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply bg-surface text-white font-heading font-semibold px-6 py-2.5 rounded-lg
+           transition-all duration-150 hover:bg-border active:scale-95
+           border border-border;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-surface border border-border rounded-xl;
+  }
+
+  /* Input */
+  .input {
+    @apply bg-bg border border-border rounded-lg px-4 py-2.5
+           text-white placeholder-slate-600 font-body
+           focus:outline-none focus:border-pink/50 transition-colors duration-150;
+  }
+}
+
+/* Pixel particle burst animation */
+@keyframes burst {
+  0%   { transform: scale(0) translate(0, 0); opacity: 1; }
+  100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
+}
+.particle {
+  animation: burst 0.4s ease-out forwards;
+}
