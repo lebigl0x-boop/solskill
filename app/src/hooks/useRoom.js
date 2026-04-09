@@ -13,7 +13,7 @@ export function useRoom(roomId) {
 
     // Fetch current state on mount
     socket.emit('room:get', { roomId }, ({ ok, room, error }) => {
-      if (ok) setRoom(room)
+      if (ok) { console.log('[room]', room); setRoom(room) }
       else setError(error)
     })
 
