@@ -121,7 +121,14 @@ export default function Home() {
                     <span>👥</span>
                     <span className="font-mono">{room.playerCount}/6</span>
                   </div>
-                  <span className="text-xs text-slate-600">by {room.hostName}</span>
+                  <div className="flex items-center gap-2">
+                    {room.entryFee > 0 && (
+                      <span className="text-xs font-mono text-amber font-bold">{room.entryFee} SOL</span>
+                    )}
+                    {room.entryFee === 0 && (
+                      <span className="text-xs font-mono text-slate-600">free</span>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}

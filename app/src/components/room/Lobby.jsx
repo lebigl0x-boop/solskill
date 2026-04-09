@@ -58,20 +58,27 @@ export default function Lobby({ room, socket, onStart, isHost, escrowPubkey, myI
 
         {/* Pool */}
         {room.entryFee > 0 && (
-          <div className="mt-5 grid grid-cols-3 gap-3">
-            <div className="bg-bg rounded-lg p-3 border border-border text-center">
-              <div className="text-xs text-slate-500 mb-1 font-mono">Entry fee</div>
-              <div className="text-lg font-mono font-bold text-amber">{room.entryFee} SOL</div>
-            </div>
-            <div className="bg-bg rounded-lg p-3 border border-pink/20 text-center">
-              <div className="text-xs text-slate-500 mb-1 font-mono">Pool total</div>
-              <div className="text-lg font-mono font-bold text-pink text-glow-pink">{(room.pool ?? 0).toFixed(3)} SOL</div>
-            </div>
-            <div className="bg-bg rounded-lg p-3 border border-cyan/20 text-center">
-              <div className="text-xs text-slate-500 mb-1 font-mono">Winner gets</div>
-              <div className="text-lg font-mono font-bold text-cyan">
-                {((room.pool ?? 0) * 0.97).toFixed(3)} SOL
+          <div className="mt-5">
+            {/* Pool hero */}
+            <div className="bg-bg rounded-xl p-5 border border-pink/20 text-center mb-3">
+              <div className="text-xs text-slate-500 font-mono uppercase tracking-widest mb-1">Pool actuelle</div>
+              <div className="text-5xl font-mono font-black text-pink text-glow-pink">
+                {(room.pool ?? 0).toFixed(3)}
+                <span className="text-2xl ml-2 text-pink/60">SOL</span>
               </div>
+              <div className="text-sm text-slate-500 mt-2">
+                Winner gets <span className="text-cyan font-bold">{((room.pool ?? 0) * 0.97).toFixed(3)} SOL</span>
+                <span className="text-slate-600"> (3% platform fee)</span>
+              </div>
+            </div>
+            {/* Bid info */}
+            <div className="flex gap-2 text-sm text-slate-500 font-mono">
+              <span className="px-3 py-1 rounded bg-surface border border-border">
+                Bid <span className="text-amber font-bold">{room.entryFee} SOL</span> par joueur
+              </span>
+              <span className="px-3 py-1 rounded bg-surface border border-border">
+                {room.players.filter(p => p.paid).length}/{room.players.length} payé
+              </span>
             </div>
           </div>
         )}
@@ -79,26 +86,32 @@ export default function Lobby({ room, socket, onStart, isHost, escrowPubkey, myI
 
       {/* Pay to join */}
       {room.entryFee > 0 && !hasPaid && (
-        <div className="card p-5 border-amber/30">
-          <h3 className="font-heading font-semibold text-amber mb-3">💰 Pay to play</h3>
+        <div className="card p-5 border-amber/30 bg-amber/5">
+          <h3 className="font-heading font-semibold text-amber mb-1">💰 Place ton bid</h3>
+          <p className="text-slate-500 text-xs mb-4">Tout le monde mise le même montant — winner takes all.</p>
           {!publicKey ? (
-            <p className="text-slate-400 text-sm">Connecte ton wallet Phantom pour payer l'entry fee.</p>
+            <p className="text-slate-400 text-sm">Connecte ton wallet Phantom pour miser.</p>
           ) : (
             <>
-              <p className="text-slate-400 text-sm mb-4">
-                Envoie <span className="text-white font-bold">{room.entryFee} SOL</span> (testnet) pour rejoindre la partie.
-                La pool sera automatiquement envoyée au winner.
-              </p>
               {payError && <p className="text-pink text-sm mb-3">{payError}</p>}
               <button
                 onClick={handlePay}
                 disabled={paying}
-                className="btn-primary w-full py-3 disabled:opacity-60"
+                className="btn-primary w-full py-4 text-lg disabled:opacity-60"
               >
-                {paying ? '⏳ Transaction en cours...' : `Pay ${room.entryFee} SOL (devnet) →`}
+                {paying
+                  ? '⏳ Confirmation en cours...'
+                  : `Miser ${room.entryFee} SOL →`}
               </button>
+              <p className="text-xs text-slate-600 text-center mt-2">Phantom va s'ouvrir pour confirmer</p>
             </>
           )}
+        </div>
+      )}
+
+      {room.entryFee > 0 && hasPaid && (
+        <div className="card p-4 border-cyan/20 bg-cyan/5 text-center">
+          <span className="text-cyan font-mono text-sm">✓ Bid confirmé — {room.entryFee} SOL dans la pool</span>
         </div>
       )}
 

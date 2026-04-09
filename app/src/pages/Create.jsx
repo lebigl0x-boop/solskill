@@ -72,14 +72,14 @@ export default function Create() {
             />
           </div>
 
-          {/* Entry fee */}
+          {/* Bid */}
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-2">
-              Entry fee <span className="text-slate-500 font-normal">(SOL devnet)</span>
+              Bid <span className="text-slate-500 font-normal">— chaque joueur mise ce montant</span>
             </label>
             <div className="relative">
               <input
-                className="input w-full pr-16"
+                className="input w-full pr-16 text-xl font-mono font-bold"
                 type="number"
                 min="0"
                 step="0.01"
@@ -89,7 +89,9 @@ export default function Create() {
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">SOL</span>
             </div>
-            <p className="text-xs text-slate-600 mt-1">0 = free to join</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Tout le monde met le même montant — winner takes all. 0 = free to play.
+            </p>
           </div>
 
           {/* Room name */}

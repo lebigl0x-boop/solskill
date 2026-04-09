@@ -19,8 +19,8 @@ export function registerRoomHandlers(io, socket) {
 
     socket.join(id)
     // Host rejoint sans payer (il a créé la room — son fee compte quand il "pay to join")
-    // Host ne paye pas l'entry fee (il a créé la room)
-    room.players.set(socket.id, { id: socket.id, name: playerName, score: 0, paid: true })
+    // Host doit aussi payer son bid (comme tout le monde)
+    room.players.set(socket.id, { id: socket.id, name: playerName, score: 0, paid: entryFee === 0 })
     socket.data.roomId = id
     socket.data.playerName = playerName
 
