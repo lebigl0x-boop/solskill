@@ -86,7 +86,7 @@ export default function Lobby({ room, socket, onStart, isHost, escrowPubkey, myI
           ) : (
             <>
               <p className="text-slate-400 text-sm mb-4">
-                Envoie <span className="text-white font-bold">{room.entryFee} SOL</span> (devnet) pour rejoindre la partie.
+                Envoie <span className="text-white font-bold">{room.entryFee} SOL</span> (testnet) pour rejoindre la partie.
                 La pool sera automatiquement envoyée au winner.
               </p>
               {payError && <p className="text-pink text-sm mb-3">{payError}</p>}

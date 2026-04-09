@@ -3,6 +3,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useEffect, useState } from 'react'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+// Network: testnet
 
 export default function ConnectButton() {
   const { publicKey, disconnect, connecting } = useWallet()

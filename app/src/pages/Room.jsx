@@ -178,7 +178,7 @@ export default function Room() {
                 </p>
                 <p className="text-slate-400 text-xs mt-1">
                   {payout ? (
-                    <span className="text-cyan">✓ Envoyé — <a href={`https://explorer.solana.com/tx/${payout.signature}?cluster=devnet`} target="_blank" rel="noreferrer" className="underline">voir tx</a></span>
+                    <span className="text-cyan">✓ Envoyé — <a href={`https://explorer.solana.com/tx/${payout.signature}?cluster=testnet`} target="_blank" rel="noreferrer" className="underline">voir tx</a></span>
                   ) : 'Payout en cours...'}
                 </p>
               </div>

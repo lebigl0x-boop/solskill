@@ -10,7 +10,7 @@ import {
 } from '@solana/web3.js'
 
 export const connection = new Connection(
-  process.env.SOLANA_RPC || clusterApiUrl('devnet'),
+  process.env.SOLANA_RPC || clusterApiUrl('testnet'),
   'confirmed'
 )
 

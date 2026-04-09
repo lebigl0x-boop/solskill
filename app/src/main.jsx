@@ -11,7 +11,7 @@ import { clusterApiUrl } from '@solana/web3.js'
 import '@solana/wallet-adapter-react-ui/styles.css'
 
 const wallets = [new PhantomWalletAdapter()]
-const endpoint = clusterApiUrl('devnet')
+const endpoint = clusterApiUrl('testnet')
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
