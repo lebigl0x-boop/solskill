@@ -17,7 +17,7 @@
 
 export const rooms = new Map()
 
-export function createRoom({ id, name, host, hostName, isPublic, game, config }) {
+export function createRoom({ id, name, host, hostName, isPublic, game, config, entryFee = 0 }) {
   const room = {
     id,
     name,
@@ -26,6 +26,9 @@ export function createRoom({ id, name, host, hostName, isPublic, game, config })
     state: 'LOBBY',
     isPublic,
     game,
+    entryFee,           // SOL par joueur
+    pool: 0,            // SOL total reçus
+    paidPlayers: new Set(), // walletAddress des joueurs qui ont payé
     players: new Map(),
     chat: [],
     config: { duration: 30000, ...config },
@@ -53,8 +56,10 @@ export function serializeRoom(room) {
     state: room.state,
     isPublic: room.isPublic,
     game: room.game,
+    entryFee: room.entryFee,
+    pool: room.pool,
     players: Array.from(room.players.values()),
-    chat: room.chat.slice(-50), // last 50 messages
+    chat: room.chat.slice(-50),
     config: room.config,
     createdAt: room.createdAt,
   }
@@ -70,6 +75,8 @@ export function getPublicRooms() {
       state: r.state,
       game: r.game,
       playerCount: r.players.size,
+      entryFee: r.entryFee,
+      pool: r.pool,
       createdAt: r.createdAt,
     }))
     .sort((a, b) => b.createdAt - a.createdAt)

@@ -21,18 +21,30 @@ export default function Room() {
   const [joined, setJoined] = useState(navState.alreadyJoined ?? false)
   const [nameInput, setNameInput] = useState('')
   const [joinError, setJoinError] = useState(null)
+  const [escrowPubkey, setEscrowPubkey] = useState(null)
+  const [payout, setPayout] = useState(null)
 
   const { room, error, countdown, gameResult, join, leave, start } = useRoom(roomId)
   const { target, score, liveScores, gameInfo, timeLeft, sendClick } = useGame()
 
   const myId = socket.id
 
-  // Si le créateur arrive avec alreadyJoined, on re-join quand même
-  // pour enregistrer le socket actuel côté serveur
+  // Si le créateur arrive avec alreadyJoined, on re-join pour enregistrer le socket actuel
   useEffect(() => {
     if (navState.alreadyJoined && navState.playerName) {
-      join(navState.playerName)
+      join(navState.playerName).then(res => {
+        if (res?.escrowPubkey) setEscrowPubkey(res.escrowPubkey)
+      })
     }
+    // Récupérer l'adresse escrow
+    socket.emit('escrow:pubkey', {}, ({ pubkey }) => setEscrowPubkey(pubkey))
+  }, [])
+
+  // Écouter le payout
+  useEffect(() => {
+    const onPayout = (data) => setPayout(data)
+    socket.on('game:payout', onPayout)
+    return () => socket.off('game:payout', onPayout)
   }, [])
 
   // Cleanup on unmount
@@ -159,6 +171,18 @@ export default function Room() {
             <p className="text-slate-400 mb-2 font-mono">
               Score: <span className="text-cyan text-glow-cyan font-bold">{gameResult.winner?.score}</span> hits
             </p>
+            {gameResult.pool > 0 && (
+              <div className="my-3 p-3 rounded-lg bg-pink/10 border border-pink/30">
+                <p className="text-pink font-mono font-bold text-lg">
+                  💸 {(gameResult.pool * 0.97).toFixed(3)} SOL
+                </p>
+                <p className="text-slate-400 text-xs mt-1">
+                  {payout ? (
+                    <span className="text-cyan">✓ Envoyé — <a href={`https://explorer.solana.com/tx/${payout.signature}?cluster=devnet`} target="_blank" rel="noreferrer" className="underline">voir tx</a></span>
+                  ) : 'Payout en cours...'}
+                </p>
+              </div>
+            )}
 
             {/* Final scores */}
             <div className="my-6 space-y-2">
@@ -193,7 +217,7 @@ export default function Room() {
           {/* Left: game area */}
           <div className="flex-1 min-w-0">
             {room.state === 'LOBBY' && (
-              <Lobby room={room} socket={socket} onStart={start} isHost={isHost} />
+              <Lobby room={room} socket={socket} onStart={start} isHost={isHost} escrowPubkey={escrowPubkey} myId={myId} />
             )}
 
             {(room.state === 'LIVE' || room.state === 'COUNTDOWN') && (

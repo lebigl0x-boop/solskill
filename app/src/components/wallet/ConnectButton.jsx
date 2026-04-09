@@ -1,8 +1,46 @@
-// Wallet connect — placeholder until v0.3 (Anchor + $SHOT)
+import { useWallet } from '@solana/wallet-adapter-react'
+import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { useEffect, useState } from 'react'
+import { useConnection } from '@solana/wallet-adapter-react'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+
 export default function ConnectButton() {
+  const { publicKey, disconnect, connecting } = useWallet()
+  const { connection } = useConnection()
+  const { setVisible } = useWalletModal()
+  const [balance, setBalance] = useState(null)
+
+  useEffect(() => {
+    if (!publicKey) { setBalance(null); return }
+    connection.getBalance(publicKey).then(b => setBalance(b / LAMPORTS_PER_SOL))
+  }, [publicKey, connection])
+
+  if (connecting) return (
+    <button className="btn-secondary opacity-60 cursor-not-allowed text-sm" disabled>
+      Connecting...
+    </button>
+  )
+
+  if (publicKey) {
+    const addr = publicKey.toBase58()
+    const short = `${addr.slice(0, 4)}...${addr.slice(-4)}`
+    return (
+      <button
+        onClick={disconnect}
+        className="flex items-center gap-2 bg-surface border border-purple/40 text-purple font-mono text-sm px-4 py-2 rounded-lg hover:border-purple/80 hover:bg-purple/10 transition-all duration-150"
+      >
+        <span className="w-2 h-2 rounded-full bg-purple inline-block" />
+        {short}
+        {balance !== null && (
+          <span className="text-slate-400 ml-1">{balance.toFixed(2)} SOL</span>
+        )}
+      </button>
+    )
+  }
+
   return (
     <button
-      onClick={() => alert('Wallet connect arrives in v0.3 with $SHOT token!')}
+      onClick={() => setVisible(true)}
       className="flex items-center gap-2 bg-surface border border-purple/40 text-slate-300 font-heading text-sm px-4 py-2 rounded-lg hover:border-purple/80 hover:text-purple transition-all duration-150"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

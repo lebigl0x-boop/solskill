@@ -196,32 +196,40 @@ skillshot/
 
 ## Roadmap
 
-### v0.1 — Core (no blockchain yet)
-- [ ] Room creation + shareable link
-- [ ] Phantom wallet connect (signature auth only)
-- [ ] Socket.io room state + live scoreboard
-- [ ] Target Rush game (Canvas, server-side validation)
-- [ ] Basic chat per room
-- [ ] Homepage with public rooms feed
+### v0.1 — Core ✅ DONE
+- [x] Room creation + shareable link
+- [x] Socket.io room state + live scoreboard
+- [x] Target Rush game (Canvas, server-side anti-cheat)
+- [x] Basic chat per room
+- [x] Homepage with public rooms feed
+- [x] Deploy — frontend Vercel, backend Railway
 
-### v0.2 — Games
-- [ ] Reflex Duel (1v1 bracket)
-- [ ] Snake Arena (multiplayer canvas)
-- [ ] Spectator view with live scores
+### v0.2 — SOL entry fees (devnet) 🔨 IN PROGRESS
+- [ ] Phantom wallet connect (real tx, not just signature)
+- [ ] Entry fee field on room creation (in SOL)
+- [ ] Pay-to-join — Phantom signs tx → server validates on-chain
+- [ ] Pool display in lobby (total SOL locked)
+- [ ] Auto-payout to winner after game ends (centralized escrow)
+- [ ] 3% platform fee
 
-### v0.3 — Blockchain
-- [ ] $SHOT SPL token deployed (devnet)
-- [ ] Jupiter swap integration (SOL → $SHOT)
-- [ ] Escrow smart contract (Anchor)
-- [ ] Auto-payout on game result
-- [ ] Spectator betting system
+### v0.3 — Games
+- [ ] Reflex Duel (1v1, best of 5)
+- [ ] Snake Arena (2-8 players, shared canvas)
+- [ ] Spectator view + betting system
 
-### v1.0 — Launch
-- [ ] Mainnet
+### v0.4 — $SHOT Token
+- [ ] $SHOT SPL token deployed (devnet → mainnet)
+- [ ] Jupiter swap integration (SOL → $SHOT inline)
+- [ ] Entry fees in $SHOT
+- [ ] Spectator backing in $SHOT
+
+### v1.0 — Smart contract + Launch
+- [ ] Anchor escrow contract (replace centralized escrow)
 - [ ] Smart contract audit
+- [ ] Mainnet launch
 - [ ] Win share card (Twitter/X)
 - [ ] Crypto Quiz game
-- [ ] Twitch integration (stream overlay)
+- [ ] Twitch overlay integration
 
 ---
 

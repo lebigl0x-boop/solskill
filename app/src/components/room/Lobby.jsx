@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { usePayToJoin } from '../../hooks/usePayToJoin.js'
 
 const GAME_LABELS = {
   target_rush: '🎯 Target Rush',
@@ -6,14 +8,24 @@ const GAME_LABELS = {
   snake_arena: '🐍 Snake Arena',
 }
 
-export default function Lobby({ room, socket, onStart, isHost }) {
+export default function Lobby({ room, socket, onStart, isHost, escrowPubkey, myId }) {
   const [copied, setCopied] = useState(false)
+  const { publicKey } = useWallet()
+  const { pay, paying, error: payError } = usePayToJoin()
+
   const link = `${window.location.origin}/r/${room.id}`
+  const me = room.players.find(p => p.id === myId)
+  const hasPaid = me?.paid ?? room.entryFee === 0
+  const allPaid = room.players.every(p => p.paid)
 
   const copyLink = () => {
     navigator.clipboard.writeText(link)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handlePay = async () => {
+    await pay({ roomId: room.id, entryFee: room.entryFee, escrowPubkey })
   }
 
   return (
@@ -34,27 +46,61 @@ export default function Lobby({ room, socket, onStart, isHost }) {
               </span>
             </div>
           </div>
+          <button
+            onClick={copyLink}
+            className={`text-xs font-mono px-3 py-1.5 rounded-lg border transition-all duration-150 ${
+              copied ? 'border-cyan/60 text-cyan bg-cyan/10' : 'border-border text-slate-400 hover:border-slate-600 hover:text-white'
+            }`}
+          >
+            {copied ? '✓ Copied!' : '📋 Copy link'}
+          </button>
+        </div>
 
-          <div className="flex flex-col items-end gap-2">
-            <button
-              onClick={copyLink}
-              className={`text-xs font-mono px-3 py-1.5 rounded-lg border transition-all duration-150 ${
-                copied
-                  ? 'border-cyan/60 text-cyan bg-cyan/10'
-                  : 'border-border text-slate-400 hover:border-slate-600 hover:text-white'
-              }`}
-            >
-              {copied ? '✓ Copied!' : '📋 Copy link'}
-            </button>
+        {/* Pool */}
+        {room.entryFee > 0 && (
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="bg-bg rounded-lg p-3 border border-border text-center">
+              <div className="text-xs text-slate-500 mb-1 font-mono">Entry fee</div>
+              <div className="text-lg font-mono font-bold text-amber">{room.entryFee} SOL</div>
+            </div>
+            <div className="bg-bg rounded-lg p-3 border border-pink/20 text-center">
+              <div className="text-xs text-slate-500 mb-1 font-mono">Pool total</div>
+              <div className="text-lg font-mono font-bold text-pink text-glow-pink">{(room.pool ?? 0).toFixed(3)} SOL</div>
+            </div>
+            <div className="bg-bg rounded-lg p-3 border border-cyan/20 text-center">
+              <div className="text-xs text-slate-500 mb-1 font-mono">Winner gets</div>
+              <div className="text-lg font-mono font-bold text-cyan">
+                {((room.pool ?? 0) * 0.97).toFixed(3)} SOL
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* Shareable link */}
-        <div className="mt-4 p-3 bg-bg rounded-lg border border-border">
-          <p className="text-xs text-slate-500 mb-1">Share with friends</p>
-          <p className="font-mono text-sm text-slate-300 break-all">{link}</p>
-        </div>
+        )}
       </div>
+
+      {/* Pay to join */}
+      {room.entryFee > 0 && !hasPaid && (
+        <div className="card p-5 border-amber/30">
+          <h3 className="font-heading font-semibold text-amber mb-3">💰 Pay to play</h3>
+          {!publicKey ? (
+            <p className="text-slate-400 text-sm">Connecte ton wallet Phantom pour payer l'entry fee.</p>
+          ) : (
+            <>
+              <p className="text-slate-400 text-sm mb-4">
+                Envoie <span className="text-white font-bold">{room.entryFee} SOL</span> (devnet) pour rejoindre la partie.
+                La pool sera automatiquement envoyée au winner.
+              </p>
+              {payError && <p className="text-pink text-sm mb-3">{payError}</p>}
+              <button
+                onClick={handlePay}
+                disabled={paying}
+                className="btn-primary w-full py-3 disabled:opacity-60"
+              >
+                {paying ? '⏳ Transaction en cours...' : `Pay ${room.entryFee} SOL (devnet) →`}
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Players */}
       <div className="card p-4">
@@ -63,14 +109,16 @@ export default function Lobby({ room, socket, onStart, isHost }) {
         </h3>
         <div className="space-y-2">
           {room.players.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-bg border border-border"
-            >
+            <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg bg-bg border border-border">
               <div className="w-2 h-2 rounded-full bg-cyan animate-pulse-fast" />
-              <span className="font-body text-white">{p.name}</span>
+              <span className="font-body text-white flex-1">{p.name}</span>
+              {room.entryFee > 0 && (
+                <span className={`text-xs font-mono px-2 py-0.5 rounded ${p.paid ? 'text-cyan bg-cyan/10 border border-cyan/20' : 'text-amber bg-amber/10 border border-amber/20'}`}>
+                  {p.paid ? '✓ paid' : 'pending'}
+                </span>
+              )}
               {p.id === room.host && (
-                <span className="ml-auto text-xs font-mono text-amber px-2 py-0.5 rounded bg-amber/10 border border-amber/20">
+                <span className="text-xs font-mono text-amber px-2 py-0.5 rounded bg-amber/10 border border-amber/20">
                   HOST
                 </span>
               )}
@@ -79,18 +127,19 @@ export default function Lobby({ room, socket, onStart, isHost }) {
         </div>
       </div>
 
-      {/* Start button (host only) */}
+      {/* Start */}
       {isHost && (
         <button
           onClick={onStart}
-          disabled={room.players.length < 1}
+          disabled={!allPaid}
+          title={!allPaid ? 'Tous les joueurs doivent payer avant de commencer' : ''}
           className="btn-primary text-center text-lg py-4 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
         >
-          START GAME →
+          {allPaid ? 'START GAME →' : `En attente des paiements (${room.players.filter(p=>p.paid).length}/${room.players.length})`}
         </button>
       )}
       {!isHost && (
-        <div className="text-center text-slate-500 text-sm font-body">
+        <div className="text-center text-slate-500 text-sm">
           Waiting for host to start the game...
         </div>
       )}

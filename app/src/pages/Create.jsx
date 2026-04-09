@@ -15,12 +15,15 @@ export default function Create() {
   const [playerName, setPlayerName] = useState('')
   const [game, setGame] = useState('target_rush')
   const [isPublic, setIsPublic] = useState(true)
+  const [entryFee, setEntryFee] = useState('0.1')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
   const handleCreate = () => {
     if (!name.trim()) return setError('Room name is required')
     if (!playerName.trim()) return setError('Your name is required')
+    const fee = parseFloat(entryFee)
+    if (isNaN(fee) || fee < 0) return setError('Entry fee invalide')
     setError(null)
     setLoading(true)
 
@@ -29,6 +32,7 @@ export default function Create() {
       playerName: playerName.trim(),
       game,
       isPublic,
+      entryFee: parseFloat(entryFee) || 0,
     }, ({ ok, room, error }) => {
       setLoading(false)
       if (ok) {
@@ -66,6 +70,26 @@ export default function Create() {
               onChange={e => setPlayerName(e.target.value)}
               maxLength={24}
             />
+          </div>
+
+          {/* Entry fee */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-300 mb-2">
+              Entry fee <span className="text-slate-500 font-normal">(SOL devnet)</span>
+            </label>
+            <div className="relative">
+              <input
+                className="input w-full pr-16"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.1"
+                value={entryFee}
+                onChange={e => setEntryFee(e.target.value)}
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">SOL</span>
+            </div>
+            <p className="text-xs text-slate-600 mt-1">0 = free to join</p>
           </div>
 
           {/* Room name */}
